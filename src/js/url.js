@@ -10,7 +10,7 @@ function moveForward(event){
     }
     else {
         console.log(no_floors + " --- " + no_lifts);
-        var url=`https://66c382cb0f84c30094809309--hilarious-clafoutis-a0499f.netlify.app/src/src/index.html?floors=${no_floors}&lifts=${no_lifts}`
+        var url=`https://suvidh-lift-simulation.netlify.app/src/src/index.html?floors=${no_floors}&lifts=${no_lifts}`
         document.location.href=url;
     }
 
