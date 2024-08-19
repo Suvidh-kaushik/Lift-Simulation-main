@@ -1,0 +1,28 @@
+.building{
+    height:100px;
+    width:100px;
+    background-color: #f0f0f0;
+    position: relative;
+    border: 1px solid #000;
+}
+
+.block{
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    position: absolute;
+    bottom: 0;
+    left: 25px;
+    transition: bottom 0.5s ease-in-out; /**see what is this*/
+}
+
+
+.floor{
+    height:10px;
+    width:100px;
+    background-color: black;
+    position: absolute;
+    bottom:-10;
+    color: azure;
+    border: 1px solid white;
+  }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            *{
+                margin: 0;
+                padding: 0;
+               
+            }
+           body{
+            display:flex;
+                justify-content: center;
+                height:100vh;
+                overflow: hidden;
+                align-items: center;
+                flex-direction: column;
+                /* height: 500px; */
+           }
+           .main{
+            border: 2px solid black;
+            padding:40px;
+           }
+           #button{
+            width: 80px;
+           }
+           input{
+            width:100px;
+           }
+        </style>
+    </head>
+    <body>
+        <div class="main">
+            <div><b>LIFT-SIMULATION</b><div> 
+                <br>
+                <br>
+            <form>
+            <label for="floors">ENTER NO.OF FLOORS</label><br>
+            <br>
+            <input type="number" min="1" max="30" id="floors"></input><br>
+            <br>
+            <label for="lifts">ENTER NO.OF LIFTS</label><br><br>
+            <input type="number" min="1" max="30" id="lifts"></input><br><br>
+            <button id="button" type="submit" onclick="moveForward(event)">button</button>
+            </form></div>
+      </div>
+        <script src="./js/url.js"></script>
+    </body>
+
+</html>
