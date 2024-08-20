@@ -48,6 +48,7 @@ function generateFloors() {
         floor.style.bottom = `${floorTop}px`;
         floor.style.height = `${floorHeight}px`;
         floor.style.width = `${buildingWidth}px`;
+        floor.style.minWidth=`300px`;
         
         const data = document.createElement("div");
         data.textContent = `Floor ${i + 1}`;
