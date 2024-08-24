@@ -126,7 +126,7 @@ function generateFloors() {
         const downButton = document.createElement("button");
         downButton.innerText = "DOWN";
         downButton.style.width = "60px";
-
+        
         if (i === 0) {
             ButtonsDiv.appendChild(upButton);
             ButtonsDiv.style.justifyContent = "center";
@@ -180,8 +180,8 @@ function generateFloors() {
                 }
         
                 liftsInAfloor[targetFloor].push(nearestLiftIndex);
-                 forceClose(nearestLiftIndex);
-                moveToFloor(targetFloor, nearestLiftIndex, liftMoveTime);
+                 await closeDoors(nearestLiftIndex)
+                 moveToFloor(targetFloor, nearestLiftIndex, liftMoveTime);
             }
         }
 
@@ -203,6 +203,12 @@ function generateFloors() {
 
 
 function generateLifts() {
+     
+    if(totalFloors==1){
+        alert("no second floor to go please build it")
+        return
+    }
+
     for (var i = 0; i < noOfLifts; i++) {
         const lift = document.createElement("div");
         lift.className = "lift";
@@ -244,8 +250,8 @@ function generateLifts() {
 
 
 document.addEventListener("DOMContentLoaded", async() => {
-   await generateFloors();
-   await generateLifts();
+    generateFloors();
+    generateLifts();
 });
 
 
@@ -256,59 +262,56 @@ document.addEventListener("DOMContentLoaded", async() => {
 
 
 
-function moveToFloor(floor, liftId, liftMoveTime) {
+ function moveToFloor(floor, liftId, liftMoveTime) {
     const newPosition = floor * floorHeight;
     const lift = document.getElementById(`lift-${liftId}`);
     lift.style.transition = `bottom ${liftMoveTime}s ease-in-out`;
     lift.style.bottom = `${newPosition}px`;
     // closeDoors(liftId);
-    setTimeout(() => {
-        openDoors(liftId);
-        setTimeout(() => {
-            closeDoors(liftId);
+    setTimeout(async() => {
+      await openDoors(liftId);
+        setTimeout(async () => {
+           await closeDoors(liftId);
         }, 2500); 
     }, liftMoveTime * 1000);
 }
 
 
 function openDoors(liftId) {
+    return new Promise((resolve) => {
     const lift = document.getElementById(`lift-${liftId}`);
     const leftDoor = lift.querySelector('.left-door');
     const rightDoor = lift.querySelector('.right-door');
     
-    // Set the transition duration to 2.5 seconds
+    if(leftDoor.style.transform!=='translateX(-100%)'){
     leftDoor.style.transition = 'transform 2.5s ease';
     rightDoor.style.transition = 'transform 2.5s ease';
     
-    // Open the doors
     leftDoor.style.transform = 'translateX(-100%)';
     rightDoor.style.transform = 'translateX(100%)';
+    setTimeout(()=>resolve(),1000);
+    }
+    else{
+        resolve();
+    }
+    })
 }
 
 function closeDoors(liftId) {
+    return new Promise((resolve) => {
     const lift = document.getElementById(`lift-${liftId}`);
     const leftDoor = lift.querySelector('.left-door');
     const rightDoor = lift.querySelector('.right-door');
     
-    // Set the transition duration to 2.5 seconds
+if(leftDoor.style.transform!=='translateX(0)'){
     leftDoor.style.transition = 'transform 2.5s ease';
     rightDoor.style.transition = 'transform 2.5s ease';
     
-    // Close the doors
     leftDoor.style.transform = 'translateX(0)';
     rightDoor.style.transform = 'translateX(0)';
+     setTimeout(()=>resolve(),2000);
+}else{
+    resolve()
 }
-
-function forceClose(liftId){
-    const lift = document.getElementById(`lift-${liftId}`);
-    const leftDoor = lift.querySelector('.left-door');
-    const rightDoor = lift.querySelector('.right-door');
-    
-    // Set the transition duration to 2.5 seconds
-    leftDoor.style.transition = 'transform 1s ease';
-    rightDoor.style.transition = 'transform 1s ease';
-    
-    // Close the doors
-    leftDoor.style.transform = 'translateX(0)';
-    rightDoor.style.transform = 'translateX(0)';
+    })
 }
