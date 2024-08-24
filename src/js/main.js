@@ -40,6 +40,66 @@ for(var i=0;i<totalFloors;i++){
 }
 
 // Generate floors dynamically
+// function generateFloors() {
+//     for (let i = 0; i < totalFloors; i++) {
+//         const floor = document.createElement("div");
+//         floor.className = "floor";
+//         const floorTop = i * floorHeight;
+//         floor.style.bottom = `${floorTop}px`;
+//         floor.style.height = `${floorHeight}px`;
+//         floor.style.width = `${buildingWidth}px`;
+        
+//         const data = document.createElement("div");
+//         data.textContent = `Floor ${i + 1}`;
+//         data.style.color = "white";
+//         data.style.padding="10px"
+//         data.style.margin="12px"
+//         data.style.border=`2px solid white`
+        
+//         const button = document.createElement("button");
+//         if(i==0){
+//             button.innerHTML = `<img height="80px" width="57px" src="https://www.svgrepo.com/show/155993/triangular-up-arrow.svg" alt="UP"/>`;
+//         }
+//         else if(i==totalFloors-1){
+//         button.innerHTML = `<img height="80px" width="57px" src="https://www.svgrepo.com/show/80156/down-arrow.svg" alt="UP"/>`;
+//         }
+//         else{
+//             button.innerHTML = `<img height="80px" width="57px" src="https://www.svgrepo.com/download/119597/up-and-down-arrows.svg" alt="UP"/>`;
+
+//         }
+//         button.addEventListener("click", () => {
+//             const liftIndex = (nofclicks = (nofclicks + 1) % noOfLifts);
+//             const liftMoveTime = Math.abs(liftState[liftIndex] - i) * 2;
+//             if(liftState[liftIndex]!=0){
+//                 liftsInAfloor[liftState[liftIndex]].pop();
+//             }
+//             liftState[liftIndex] = i;
+//             if (liftsInAfloor[i].length < 2) {
+//                 liftsInAfloor[i].push(liftIndex);
+//                 closeDoors(liftIndex);
+//                 moveToFloor(i, liftIndex, liftMoveTime);
+//             } else {
+//                 // If two lifts are already on the floor, open their doors only
+//                 for (let j = 0; j < liftsInAfloor[i].length; j++) {
+//                     const liftToOpen = liftsInAfloor[i][j];
+//                     setTimeout(() => {
+//                         openDoors(liftToOpen);
+//                         setTimeout(() => {
+//                             closeDoors(liftToOpen);
+//                         }, 2500);
+//                     }, 2500);
+//                 }
+//             }
+//         });
+        
+//         floor.appendChild(button);
+//         floor.appendChild(data);
+//         floorsContainer.appendChild(floor);
+//     }
+// }
+
+
+
 function generateFloors() {
     for (let i = 0; i < totalFloors; i++) {
         const floor = document.createElement("div");
@@ -87,7 +147,7 @@ function generateFloors() {
                         setTimeout(() => {
                             closeDoors(liftToOpen);
                         }, 2500);
-                    }, 2000);
+                    }, 2500);
                 }
             }
         });
@@ -97,6 +157,19 @@ function generateFloors() {
         floorsContainer.appendChild(floor);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -173,17 +246,28 @@ function moveToFloor(floor, liftId, liftMoveTime) {
 
 function openDoors(liftId) {
     const lift = document.getElementById(`lift-${liftId}`);
-
     const leftDoor = lift.querySelector('.left-door');
     const rightDoor = lift.querySelector('.right-door');
-        leftDoor.style.transform=`translateX(-100%)`;
-        rightDoor.style.transform = 'translateX(100%)';
+    
+    // Set the transition duration to 2.5 seconds
+    leftDoor.style.transition = 'transform 2.5s ease';
+    rightDoor.style.transition = 'transform 2.5s ease';
+    
+    // Open the doors
+    leftDoor.style.transform = 'translateX(-100%)';
+    rightDoor.style.transform = 'translateX(100%)';
 }
 
 function closeDoors(liftId) {
-     const lift = document.getElementById(`lift-${liftId}`);
+    const lift = document.getElementById(`lift-${liftId}`);
     const leftDoor = lift.querySelector('.left-door');
     const rightDoor = lift.querySelector('.right-door');
-    leftDoor.style.transform=`translateX(0)`;
+    
+    // Set the transition duration to 2.5 seconds
+    leftDoor.style.transition = 'transform 2.5s ease';
+    rightDoor.style.transition = 'transform 2.5s ease';
+    
+    // Close the doors
+    leftDoor.style.transform = 'translateX(0)';
     rightDoor.style.transform = 'translateX(0)';
 }
