@@ -39,65 +39,8 @@ for(var i=0;i<totalFloors;i++){
     liftsInAfloor[i]=[];
 }
 
-// Generate floors dynamically
-// function generateFloors() {
-//     for (let i = 0; i < totalFloors; i++) {
-//         const floor = document.createElement("div");
-//         floor.className = "floor";
-//         const floorTop = i * floorHeight;
-//         floor.style.bottom = `${floorTop}px`;
-//         floor.style.height = `${floorHeight}px`;
-//         floor.style.width = `${buildingWidth}px`;
-//         floor.style.minWidth=`300px`;
-        
-//         const data = document.createElement("div");
-//         data.textContent = `Floor ${i + 1}`;
-//         data.style.color = "white";
-//         data.style.padding="10px"
-//         data.style.margin="12px"
-//         data.style.border=`2px solid white`
-        
-//         const button = document.createElement("button");
-//         if(i==0){
-//             button.innerHTML = `<img height="80px" width="57px" src="https://www.svgrepo.com/show/155993/triangular-up-arrow.svg" alt="UP"/>`;
-//         }
-//         else if(i==totalFloors-1){
-//         button.innerHTML = `<img height="80px" width="57px" src="https://www.svgrepo.com/show/80156/down-arrow.svg" alt="UP"/>`;
-//         }
-//         else{
-//             button.innerHTML = `<img height="80px" width="57px" src="https://www.svgrepo.com/download/119597/up-and-down-arrows.svg" alt="UP"/>`;
 
-//         }
-//         button.addEventListener("click", () => {
-//             const liftIndex = (nofclicks = (nofclicks + 1) % noOfLifts);
-//             const liftMoveTime = Math.abs(liftState[liftIndex] - i) * 2;
-//             if(liftState[liftIndex]!=0){
-//                 liftsInAfloor[liftState[liftIndex]].pop();
-//             }
-//             liftState[liftIndex] = i;
-//             if (liftsInAfloor[i].length < 2) {
-//                 liftsInAfloor[i].push(liftIndex);
-//                 closeDoors(liftIndex);
-//                 moveToFloor(i, liftIndex, liftMoveTime);
-//             } else {
-//                 // If two lifts are already on the floor, open their doors only
-//                 for (let j = 0; j < liftsInAfloor[i].length; j++) {
-//                     const liftToOpen = liftsInAfloor[i][j];
-//                     setTimeout(() => {
-//                         openDoors(liftToOpen);
-//                         setTimeout(() => {
-//                             closeDoors(liftToOpen);
-//                         }, 2500);
-//                     }, 2000);
-//                 }
-//             }
-//         });
-        
-//         floor.appendChild(button);
-//         floor.appendChild(data);
-//         floorsContainer.appendChild(floor);
-//     }
-// }
+
 
 function generateFloors() {
     for (let i = 0; i < totalFloors; i++) {
@@ -234,28 +177,10 @@ function generateLifts() {
 
 
 
-
-
-
-
-
-
-// // Move lift to the desired floor
-// async function moveToFloor(floor, liftId, liftMoveTime) {
-//     const newPosition = floor * floorHeight;
-//     const lift = document.getElementById(`lift-${liftId}`);
-//     lift.style.transition = `bottom ${liftMoveTime}s ease-in-out`;
-//     lift.style.bottom = `${newPosition}px`;
-// }
-
-
-document.addEventListener("DOMContentLoaded", async() => {
+document.addEventListener("DOMContentLoaded", () => {
     generateFloors();
     generateLifts();
 });
-
-
-
 
 
 
@@ -289,7 +214,7 @@ function openDoors(liftId) {
     
     leftDoor.style.transform = 'translateX(-100%)';
     rightDoor.style.transform = 'translateX(100%)';
-    setTimeout(()=>resolve(),1000);
+    setTimeout(()=>resolve(),2000);
     }
     else{
         resolve();
