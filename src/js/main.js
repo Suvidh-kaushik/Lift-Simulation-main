@@ -19,20 +19,17 @@ const lifts = document.querySelector('.lifts');
 const floorsContainer = document.querySelector('.floors');
 document.getElementById("data1").innerText=`LIFTS:${noOfLifts}`
 document.getElementById("data2").innerText=`FLOORS:${totalFloors}`
-var buildingWidth = blockWidth*(noOfLifts*3);
+var buildingWidth = blockWidth*(noOfLifts*4);
 building.style.height = `${totalFloors * floorHeight}px`;
 var nofclicks=-1;
 var liftsInAfloor=[]
-state = {
-    noOfFloors: totalFloors,
-    noOfLifts: noOfLifts,
-    liftState,
-    liftsInAfloor
-};
+var floorswaitingForLifts=[];
 
-// Initialize lift state
 for (var i = 0; i < noOfLifts; i++) {
-    liftState[i] = [];
+    liftState[i] = {
+        condition:'S',
+        floor:0
+    };
 }
 
 for(var i=0;i<totalFloors;i++){
@@ -81,13 +78,13 @@ function generateFloors() {
             ButtonsDiv.appendChild(downButton);
         }
 
-        async function callNearestLift(targetFloor, direction) {
+        async function callNearestLift(targetFloor) {
             if (liftsInAfloor[targetFloor].length >= 2) {
                 liftsInAfloor[targetFloor].forEach(liftId => {
                     openDoors(liftId);
                     setTimeout(() => {
                         closeDoors(liftId);
-                    }, 2500); // Close doors after 2.5 seconds
+                    }, 2500); 
                 });
                 return
             }
@@ -96,12 +93,12 @@ function generateFloors() {
             let minDistance = totalFloors; // Maximum possible distance is totalFloors - 1
 
             for (let liftIndex = 0; liftIndex < noOfLifts; liftIndex++) {
-                const currentLiftFloor = liftState[liftIndex];
+                const currentLiftFloor = liftState[liftIndex].floor;
                 const distance = Math.abs(currentLiftFloor - targetFloor);
 
-                // Ensure we select a different lift for UP and DOWN
-                const isDifferentLift = (direction === 'UP' && !liftsInAfloor[targetFloor].includes(liftIndex)) ||
-                    (direction === 'DOWN' && !liftsInAfloor[targetFloor].includes(liftIndex));
+               
+              const isDifferentLift=liftState[liftIndex].condition==='S' && !liftsInAfloor[targetFloor].includes(liftIndex)
+          
 
                 if (distance < minDistance && isDifferentLift) {
                     minDistance = distance;
@@ -110,30 +107,32 @@ function generateFloors() {
             }
 
             if (nearestLiftIndex !== -1) {
-                const currentLiftFloor = liftState[nearestLiftIndex];
+                const currentLiftFloor = liftState[nearestLiftIndex].floor;
                 const liftMoveTime = minDistance * 2;
                 if (typeof liftsInAfloor[currentLiftFloor] !== 'undefined' && liftsInAfloor[currentLiftFloor].length > 0) {
                     liftsInAfloor[currentLiftFloor].pop();
                 }
                 
-                liftState[nearestLiftIndex] = targetFloor;
-        
+                liftState[nearestLiftIndex].floor= targetFloor+1;
+                liftState[nearestLiftIndex].condition='M';
                 if (typeof liftsInAfloor[targetFloor] === 'undefined') {
                     liftsInAfloor[targetFloor] = [];
                 }
         
                 liftsInAfloor[targetFloor].push(nearestLiftIndex);
                  await closeDoors(nearestLiftIndex)
+                 console.log(liftState[nearestLiftIndex])
                  moveToFloor(targetFloor, nearestLiftIndex, liftMoveTime);
             }
         }
 
         upButton.addEventListener("click", () => {
-            callNearestLift(i, 'UP');
+            // floorswaitingForLifts.push(i);
+            callNearestLift(i);
         });
 
         downButton.addEventListener("click", () => {
-            callNearestLift(i, 'DOWN');
+            callNearestLift(i);
         });
 
         floor.appendChild(ButtonsDiv);
@@ -199,6 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
            await closeDoors(liftId);
         }, 2500); 
     }, liftMoveTime * 1000);
+    liftState[liftId].condition='S';
+    console.log(liftState[liftId])
 }
 
 
