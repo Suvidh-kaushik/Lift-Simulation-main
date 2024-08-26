@@ -13,13 +13,22 @@ function getParams() {
     };
 }
 
+function max(a,b){
+   if(a>b){
+    return a;
+   }
+   else{
+    return b;
+   }
+}
+
 const { totalFloors, noOfLifts } = getParams();
 const building = document.querySelector('.building');
 const lifts = document.querySelector('.lifts');
 const floorsContainer = document.querySelector('.floors');
 document.getElementById("data1").innerText=`LIFTS:${noOfLifts}`
 document.getElementById("data2").innerText=`FLOORS:${totalFloors}`
-var buildingWidth = blockWidth*(noOfLifts*4);
+var buildingWidth = max(blockWidth*(noOfLifts*4),1100);
 building.style.height = `${totalFloors * floorHeight}px`;
 var nofclicks=-1;
 var liftsInAfloor=[]
