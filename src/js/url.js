@@ -2,11 +2,11 @@ function moveForward(event){
     event.preventDefault();
     var no_lifts=parseInt(document.getElementById("lifts").value);
     var no_floors=parseInt(document.getElementById("floors").value);
-    if (no_floors < 1 || no_floors > 40 || no_lifts < 1 || no_lifts > 40) {
-        window.alert("Please enter values within the limits (1-40)");
+    if (no_floors < 1 || no_lifts < 1) {
+        window.alert("Please enter positive numbers");
     } 
     else if(isNaN(no_floors)||isNaN(no_lifts)){
-         window.alert("Can't be NaN")
+         window.alert("Please enter positive numbers")
     }
     else {
         console.log(no_floors + " --- " + no_lifts);
