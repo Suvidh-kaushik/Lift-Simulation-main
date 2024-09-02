@@ -2,8 +2,8 @@
 const floorHeight = 100; 
 const blockWidth = 40;
 var state = {};  
-var liftState = [];
-var floorHasLift = [];
+var liftState = []; //gives the current state of the lift i.e moving or stationary and the floor it is on for every lift
+// var floorHasLift = []; 
 
 function getParams() {
     const params = new URLSearchParams(window.location.search);
@@ -31,9 +31,9 @@ document.getElementById("data2").innerText=`FLOORS:${totalFloors}`
 var buildingWidth = max(blockWidth*(noOfLifts*4),1100);
 building.style.height = `${totalFloors * floorHeight}px`;
 var nofclicks=-1;
-var liftsInAfloor=[]
+var liftsInAfloor=[] //keeps track of the lift id which is currenlty on the floor
 var floorswaitingForLifts=[]; //queue creating using array using push for adding at the back so that front remains at the front and shift for removing the elements from the start FIFO 
-
+//floorswaitingForLifts keeps track of the floors which requested for lift or floors which have button pressed
 
 for (var i = 0; i < noOfLifts; i++) {
     liftState[i] = {
@@ -58,9 +58,10 @@ function generateFloors() {
         floor.style.height = `${floorHeight}px`;
         floor.style.width = `${buildingWidth}px`;
         floor.style.minWidth = `300px`;
+        floor.id=`Floor-${i}`
 
         const data = document.createElement("div");
-        data.textContent = `Floor ${i + 1}`;
+        data.textContent = `Floor ${i}`;
         data.style.color = "white";
         data.style.padding = "10px";
         data.style.margin = "12px";
@@ -88,13 +89,11 @@ function generateFloors() {
             ButtonsDiv.appendChild(downButton);
         }
         upButton.addEventListener("click", () => {
-            floorswaitingForLifts.push(i);
-            processQueue();
+            filterFORlifts(i,"up")
         });
         
         downButton.addEventListener("click", () => {
-            floorswaitingForLifts.push(i);
-            processQueue();
+             filterFORlifts(i,"down")
         });
         
         floor.appendChild(ButtonsDiv);
@@ -104,28 +103,47 @@ function generateFloors() {
 }
 
 
+function filterFORlifts(floor,direction){
+    if(floorswaitingForLifts.includes({floor:floor,direction:direction})===false){
+        floorswaitingForLifts.unshift({floor:floor,direction:direction});
+        processQueue();
+    }
+}
+
+
 function processQueue(){
     if(floorswaitingForLifts.length===0){
         return;
     }
-    //floorswaitingForLifts.sort()
-    var floorId=floorswaitingForLifts.shift();
-    callNearestLift(floorId)
+    var shiftedfloor=floorswaitingForLifts.shift();
+    var floorId=shiftedfloor.floor
+    var direction=shiftedfloor.direction
+    callNearestLift(floorId,direction)
 }
 
 
 
-async function callNearestLift(floorId){
-       // console.log(floorswaitingForLifts)
+async function callNearestLift(floorId,direction){
         const targetFloor=floorId;
-       // console.log(targetFloor)
-       console.log(liftsInAfloor[targetFloor])
+       
+        for (let i = 0; i < liftsInAfloor[targetFloor].length; i++) {
+            const liftIndex = liftsInAfloor[targetFloor][i];
+            if (liftState[liftIndex].direction === direction) {
+               if(liftState[liftIndex].condition==="S"){
+                await openDoors(liftIndex)
+                setTimeout(async()=>{
+                    await closeDoors(liftIndex)
+                },2000)
+               }
+                return;
+            }
+        }
         var nearestLiftIndex=-1;
         var minDistance=totalFloors;
         for(var i=0;i<noOfLifts;i++){
             var liftFloor=liftState[i].floor;
             var diff=Math.abs(liftFloor-targetFloor);
-            if(minDistance>diff && liftState[i].condition==='S' && !liftsInAfloor[targetFloor].includes(liftFloor)){
+            if(minDistance>diff && liftState[i].condition==='S' && !liftsInAfloor[targetFloor].includes(i)){
                 minDistance=diff
                 nearestLiftIndex=i;
             }
@@ -133,48 +151,28 @@ async function callNearestLift(floorId){
 
         if(nearestLiftIndex!==-1){
             const currentLiftFloor = liftState[nearestLiftIndex].floor;
-                        const liftMoveTime = minDistance * 1.5;
-                        if (liftsInAfloor[currentLiftFloor]?.length > 0) {
+                        const liftMoveTime = (minDistance)*2;
+                        if (liftsInAfloor[currentLiftFloor].length > 0) {
                             liftsInAfloor[currentLiftFloor] = liftsInAfloor[currentLiftFloor].filter(lift => lift !== nearestLiftIndex);
                         }
             
                         liftState[nearestLiftIndex].floor = targetFloor;
                         liftState[nearestLiftIndex].condition = 'M'; // 'M' stands for 'Moving'
-                        // if (!liftsInAfloor[targetFloor]) {
-                        //     liftsInAfloor[targetFloor] = [];
-                        // }
-                        // if(liftsInAfloor[targetFloor]>=2){
-                        //     //open and close doors
-                        //     return;
-                        //  }
-                         if(liftsInAfloor[targetFloor]<2){
+                        liftState[nearestLiftIndex].direction=direction
                         liftsInAfloor[targetFloor].push(nearestLiftIndex);
-                         }
-                         else{
-                            
-                            return;
-                         }
-                        console.log(liftsInAfloor[targetFloor])
-                        await closeDoors(nearestLiftIndex);
-                        // console.log(liftState[nearestLiftIndex]);
+                         
+                         await closeDoors(nearestLiftIndex);
                          moveToFloor(targetFloor, nearestLiftIndex, liftMoveTime);
         }
         else{
-            floorswaitingForLifts.push(targetFloor)
+            floorswaitingForLifts.push({floor:targetFloor,direction:direction})
         }
-    // console.log(floorswaitingForLifts)
 }
 
 
 
 
 function generateLifts() {
-     
-    if(totalFloors==1){
-        alert("no second floor to go please build it")
-        return
-    }
-
     for (var i = 0; i < noOfLifts; i++) {
         const lift = document.createElement("div");
         lift.className = "lift";
@@ -183,11 +181,11 @@ function generateLifts() {
 
         const leftDoor = document.createElement("div");
         leftDoor.className = "left-door";
-        leftDoor.style.left = '0'; // Set initial position
+        leftDoor.style.left = '0';
 
         const rightDoor = document.createElement("div");
         rightDoor.className = "right-door";
-        rightDoor.style.right = '0'; // Set initial position
+        rightDoor.style.right = '0'; 
 
         lift.appendChild(leftDoor);
         lift.appendChild(rightDoor);
@@ -213,9 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function moveToFloor(floor, liftId, liftMoveTime) {
     const newPosition = floor * floorHeight;
     const lift = document.getElementById(`lift-${liftId}`);
-    lift.style.transition = `bottom ${liftMoveTime}s ease-in-out`;
-    lift.style.bottom = `${newPosition}px`;
-    // closeDoors(liftId);
+    lift.style.transition = `transform ${liftMoveTime}s ease-in-out`;
+    lift.style.transform = `translateY(-${newPosition}px)`;
      setTimeout(async() => {
       await openDoors(liftId);
         setTimeout( () => {
@@ -225,8 +222,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }, 2500); 
     }, liftMoveTime * 1000);
-    
-    //console.log(liftState[liftId])
 }
 
 
