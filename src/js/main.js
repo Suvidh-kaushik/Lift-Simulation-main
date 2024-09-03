@@ -1,9 +1,9 @@
 
 const floorHeight = 100; 
 const blockWidth = 40;
-var state = {};  
-var liftState = []; //gives the current state of the lift i.e moving or stationary and the floor it is on for every lift
-// var floorHasLift = []; 
+let state = {};  
+let liftState = []; //gives the current state of the lift i.e moving or stationary and the floor it is on for every lift
+// let floorHasLift = []; 
 
 function getParams() {
     const params = new URLSearchParams(window.location.search);
@@ -28,21 +28,21 @@ const lifts = document.querySelector('.lifts');
 const floorsContainer = document.querySelector('.floors');
 document.getElementById("data1").innerText=`LIFTS:${noOfLifts}`
 document.getElementById("data2").innerText=`FLOORS:${totalFloors}`
-var buildingWidth = max(blockWidth*(noOfLifts*4),1100);
+let buildingWidth = max(blockWidth*(noOfLifts*4),1100);
 building.style.height = `${totalFloors * floorHeight}px`;
-var nofclicks=-1;
-var liftsInAfloor=[] //keeps track of the lift id which is currenlty on the floor
-var floorswaitingForLifts=[]; //queue creating using array using push for adding at the back so that front remains at the front and shift for removing the elements from the start FIFO 
+let nofclicks=-1;
+let liftsInAfloor=[] //keeps track of the lift id which is currenlty on the floor
+let floorswaitingForLifts=[]; //queue creating using array using push for adding at the back so that front remains at the front and shift for removing the elements from the start FIFO 
 //floorswaitingForLifts keeps track of the floors which requested for lift or floors which have button pressed
 
-for (var i = 0; i < noOfLifts; i++) {
+for (let i = 0; i < noOfLifts; i++) {
     liftState[i] = {
         condition:'S',
         floor:0
     };
 }
 
-for(var i=0;i<totalFloors;i++){
+for(let i=0;i<totalFloors;i++){
     liftsInAfloor[i]=[];
 }
 
@@ -115,9 +115,9 @@ function processQueue(){
     if(floorswaitingForLifts.length===0){
         return;
     }
-    var shiftedfloor=floorswaitingForLifts.shift();
-    var floorId=shiftedfloor.floor
-    var direction=shiftedfloor.direction
+    let shiftedfloor=floorswaitingForLifts.shift();
+    let floorId=shiftedfloor.floor
+    let direction=shiftedfloor.direction
     callNearestLift(floorId,direction)
 }
 
@@ -126,23 +126,23 @@ function processQueue(){
 async function callNearestLift(floorId,direction){
         const targetFloor=floorId;
        
-        for (let i = 0; i < liftsInAfloor[targetFloor].length; i++) {
-            const liftIndex = liftsInAfloor[targetFloor][i];
-            if (liftState[liftIndex].direction === direction) {
-               if(liftState[liftIndex].condition==="S"){
-                await openDoors(liftIndex)
-                setTimeout(async()=>{
-                    await closeDoors(liftIndex)
-                },2000)
-               }
-                return;
+     for(let liftIndex of liftsInAfloor[targetFloor]){
+        if (liftState[liftIndex].direction === direction) {
+            if(liftState[liftIndex].condition==="S"){
+             await openDoors(liftIndex)
+             setTimeout(async()=>{
+                 await closeDoors(liftIndex)
+             },2000)
             }
-        }
-        var nearestLiftIndex=-1;
-        var minDistance=totalFloors;
-        for(var i=0;i<noOfLifts;i++){
-            var liftFloor=liftState[i].floor;
-            var diff=Math.abs(liftFloor-targetFloor);
+             return;
+         }
+     }
+
+        let nearestLiftIndex=-1;
+        let minDistance=totalFloors;
+        for(let i=0;i<noOfLifts;i++){
+            let liftFloor=liftState[i].floor;
+            let diff=Math.abs(liftFloor-targetFloor);
             if(minDistance>diff && liftState[i].condition==='S' && !liftsInAfloor[targetFloor].includes(i)){
                 minDistance=diff
                 nearestLiftIndex=i;
@@ -160,8 +160,6 @@ async function callNearestLift(floorId,direction){
                         liftState[nearestLiftIndex].condition = 'M'; // 'M' stands for 'Moving'
                         liftState[nearestLiftIndex].direction=direction
                         liftsInAfloor[targetFloor].push(nearestLiftIndex);
-                         
-                         await closeDoors(nearestLiftIndex);
                          moveToFloor(targetFloor, nearestLiftIndex, liftMoveTime);
         }
         else{
@@ -173,7 +171,7 @@ async function callNearestLift(floorId,direction){
 
 
 function generateLifts() {
-    for (var i = 0; i < noOfLifts; i++) {
+    for (let i = 0; i < noOfLifts; i++) {
         const lift = document.createElement("div");
         lift.className = "lift";
         lift.id = `lift-${i}`;
